@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import FirebaseHelper from "../Helpers/firebaseHelper";
+import { AuthContext } from "../AuthContext"; // Access authentication context
 
 const TestFirebase = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const { user } = useContext(AuthContext); // Authenticated user
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState({ text: "", type: "" }); // Enhanced message state
+  const [message, setMessage] = useState({ text: "", type: "" }); // Message for user feedback
   const [isLoading, setIsLoading] = useState(false);
 
   // Handle input changes
@@ -16,7 +14,7 @@ const TestFirebase = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value.trimStart(), // Prevent leading spaces
+      [name]: value.trimStart(), // Remove leading spaces
     }));
   };
 
@@ -26,31 +24,32 @@ const TestFirebase = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[0-9]{10}$/;
 
-    if (!name || !email || !phone) {
-      return "All fields are required!";
-    }
-    if (!emailRegex.test(email)) {
-      return "Invalid email format!";
-    }
-    if (!phoneRegex.test(phone)) {
-      return "Phone number must be 10 digits!";
-    }
+    if (!name || !email || !phone) return "All fields are required!";
+    if (!emailRegex.test(email)) return "Invalid email format!";
+    if (!phoneRegex.test(phone)) return "Phone number must be 10 digits!";
     return null; // Validation passed
   };
 
-  // Add user to Firebase
+  // Add a user to Firebase
   const addUser = async () => {
+    if (!user) {
+      setMessage({ text: "You must be signed in to add users!", type: "error" });
+      return;
+    }
+
     const validationError = validateInputs();
     if (validationError) {
       setMessage({ text: validationError, type: "error" });
       return;
     }
 
+    const data = { ...formData, userId: user.uid }; // Tie data to the logged-in user
+
     setIsLoading(true);
     try {
-      const response = await FirebaseHelper.addDocument("users", formData);
+      const response = await FirebaseHelper.addDocument("users", data);
       if (response.success) {
-        setMessage({ text: `User added successfully with ID: ${response.id}`, type: "success" });
+        setMessage({ text: `User added successfully (ID: ${response.id})`, type: "success" });
         setFormData({ name: "", email: "", phone: "" }); // Reset form
         fetchUsers(); // Refresh user list
       } else {
@@ -63,11 +62,16 @@ const TestFirebase = () => {
     }
   };
 
-  // Fetch all users
+  // Fetch users associated with the current logged-in user
   const fetchUsers = async () => {
+    if (!user) {
+      setMessage({ text: "You must be signed in to view users!", type: "error" });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const response = await FirebaseHelper.getAllDocuments("users");
+      const response = await FirebaseHelper.queryDocuments("users", "userId", "==", user.uid);
       if (response.success) {
         setUsers(response.data);
         setMessage({ text: "Users fetched successfully.", type: "success" });
@@ -81,94 +85,99 @@ const TestFirebase = () => {
     }
   };
 
-  // Render message
-  const renderMessage = () => {
-    if (message.text) {
-      return (
-        <p
-          style={{
-            marginTop: "10px",
-            color: message.type === "error" ? "red" : "green",
-          }}
-        >
-          {message.text}
-        </p>
-      );
-    }
-    return null;
-  };
+  // Render user feedback message
+  const renderMessage = () =>
+    message.text && (
+      <p
+        style={{
+          marginTop: "10px",
+          color: message.type === "error" ? "red" : "green",
+          textAlign: "center",
+        }}
+      >
+        {message.text}
+      </p>
+    );
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1>Firebase User Management</h1>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f9f9f9",
+        padding: "20px",
+      }}
+    >
+      <h1 style={{ marginBottom: "20px" }}>Borrowed Bill Tracer</h1>
 
-      <h2>Add a New User</h2>
+      {user ? (
+        <p>Logged in as: <strong>{user.email}</strong></p>
+      ) : (
+        <p style={{ color: "red" }}>You are not signed in. Please log in to add or view users.</p>
+      )}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
           addUser();
         }}
         style={{
-          marginBottom: "20px",
           display: "flex",
           flexDirection: "column",
-          maxWidth: "400px",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "20px",
         }}
       >
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              margin: "5px 0",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-            }}
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              margin: "5px 0",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-            }}
-          />
-        </label>
-        <label>
-          Phone:
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              margin: "5px 0",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-            }}
-          />
-        </label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Name"
+          required
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            width: "300px",
+          }}
+        />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          required
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            width: "300px",
+          }}
+        />
+        <input
+          type="text"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          placeholder="Phone"
+          required
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            width: "300px",
+          }}
+        />
         <button
           type="submit"
           disabled={isLoading}
           style={{
-            padding: "10px",
-            marginTop: "10px",
+            padding: "10px 20px",
             backgroundColor: isLoading ? "#ccc" : "#4CAF50",
             color: "white",
             border: "none",
@@ -180,39 +189,40 @@ const TestFirebase = () => {
         </button>
       </form>
 
-      <h2>Users</h2>
       <button
         onClick={fetchUsers}
         disabled={isLoading}
         style={{
-          padding: "10px",
+          padding: "10px 20px",
           backgroundColor: isLoading ? "#ccc" : "#008CBA",
           color: "white",
           border: "none",
           borderRadius: "5px",
           cursor: isLoading ? "not-allowed" : "pointer",
+          marginBottom: "20px",
         }}
       >
-        {isLoading ? "Fetching..." : "Fetch All Users"}
+        {isLoading ? "Fetching..." : "Fetch My Users"}
       </button>
 
       {renderMessage()}
 
-      <ul style={{ marginTop: "20px", listStyle: "none", padding: "0" }}>
+      <ul style={{ listStyle: "none", padding: "0", width: "300px" }}>
         {users.map((user) => (
           <li
             key={user.id}
             style={{
               padding: "10px",
-              border: "1px solid #ccc",
+              border: "1px solid #ddd",
               borderRadius: "5px",
+              backgroundColor: "#fff",
               marginBottom: "10px",
-              display: "flex",
-              flexDirection: "column",
             }}
           >
             <strong>Name:</strong> {user.name}
+            <br />
             <strong>Email:</strong> {user.email}
+            <br />
             <strong>Phone:</strong> {user.phone}
           </li>
         ))}
