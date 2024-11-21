@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
 import Layout from "./Layout";
-import Home from "./Home";
+import Home from "./Pages/Home";
 import NoPage from "./NoPage";
 import TestFirebase from "./Tests/Testfirebase";
 

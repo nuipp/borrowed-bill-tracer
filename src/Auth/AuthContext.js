@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { auth } from "./Helpers/firebaseConfig"; // Firebase authentication instance
+import { auth } from "../Helpers/firebaseConfig"; // Firebase authentication instance
 import { onAuthStateChanged } from "firebase/auth";
 
 // Create a context for authentication

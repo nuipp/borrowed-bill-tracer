@@ -1,5 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
-import Login from "./Components/Login"; // Import Login
+import Login from "./Auth/Login"; // Import Login
 
 const Layout = () => {
   return (

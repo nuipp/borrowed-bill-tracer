@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import FirebaseHelper from "../Helpers/firebaseHelper";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "./AuthContext";
 
 const Login = () => {
   const { user } = useContext(AuthContext); // Access the authenticated user
