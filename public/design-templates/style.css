@@ -1,0 +1,17 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  h2 {
+    font-weight: bold;
+  }
+  
+  .card-header {
+    font-size: 1.2rem;
+  }
+  
+  .list-group-item {
+    font-size: 1rem;
+    border-color: #dee2e6;
+  }

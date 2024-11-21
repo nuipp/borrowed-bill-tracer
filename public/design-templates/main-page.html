@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <!-- Header with Overview and Profile -->
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 class="text-primary">Overview</h2>
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
+          Profile
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="profileMenu">
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="#">Synchronize account</a></li>
+          <li><a class="dropdown-item text-danger" href="#">Log Out</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- User Dropdown -->
+    <div class="dropdown mt-3">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+       Create new User
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="#">Ram</a></li>
+        <li><a class="dropdown-item" href="#">Shyam</a></li>
+        <li><a class="dropdown-item" href="#">Hari</a></li>
+      </ul>
+    </div>
+
+   
+  
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
