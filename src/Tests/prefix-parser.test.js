@@ -28,3 +28,23 @@ test('test tokens getter method', () => {
     parser.infix = "332+4+435)4"
     expect(parser.tokens).toEqual([332, '+', 4, '+', 435, ')', 4]);
 })
+
+describe("Calresult tests: ", () => {
+    test('Test simple calresult', () => {
+        let parser = new PrefixParser('2+1=/3');
+        expect(parser.calResult).toEqual(["2+1", "3/3", 1]);
+    })
+
+    test('Test when no =', () => {
+        let parser = new PrefixParser('2+1');
+        expect(parser.calResult).toEqual(["2+1", 3]);
+    })
+    test('Test when = at last', () => {
+        let parser = new PrefixParser('2+1=');
+        expect(parser.calResult).toEqual(["2+1", 3]);
+    })
+    test('Simple complicated expression', () => {
+        let parser = new PrefixParser('(2+4*3)-1=/13');
+        expect(parser.calResult.pop()).toEqual(1);
+    })
+})

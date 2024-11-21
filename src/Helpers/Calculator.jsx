@@ -10,6 +10,17 @@ class Calculator {
             throw new Error("Expression invalid");
         }
     }
+    setInfix(infixExpression){
+        if (!infixExpression || infixExpression.trim() === "") {
+            throw new Error("Expression invalid");
+        }
+        this.infix = infixExpression;
+        this.tokens = this.getToken(infixExpression);
+        this.postfix = [];
+        if (!this.convertPostfix()) {
+            throw new Error("Expression invalid");
+        }
+    }
 
     getToken(expression) {
         const tokens = [];

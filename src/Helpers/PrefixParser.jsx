@@ -1,6 +1,40 @@
+import Calculator from "./Calculator";
+
+/**
+ * Has infix => Can contain = inside the expression, or at the last (4+2)/2=/1=
+ * calResult returns the array of objects -> With result at the last: For eg: Above will return [(4+2/2), 3/1, 3] , Last element is the answer
+ */
 class PrefixParser{
     constructor(infix){
         this.infix = infix?infix:""
+    }
+
+    convertArrayToString(input){
+        return input.reduce((acc, c) => c = acc + c, '')
+    }
+
+    get calResult(){
+        //Returns array, that removes = from the token
+        let calResult = [];
+        let expression = "";
+        const calculator = new Calculator("1");
+        for(const token of this.tokens){
+            if(token == "="){
+                //We pressed =, need to push, and create result in expression
+                calculator.setInfix(expression)
+                calResult.push(expression)
+                expression = calculator.evaluate()
+            }
+            else{
+                expression += token
+            }
+        }
+        calResult.push(expression)
+        if(this.tokens[this.tokens.length-1] != "="){
+            calculator.setInfix(expression)
+            calResult.push(calculator.evaluate())
+        }
+        return calResult
     }
 
     get prefix(){
