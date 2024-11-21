@@ -34,8 +34,11 @@ class PrefixParser{
         }
         if(currentValue != undefined)
             t.push(currentValue)
-        console.log(" My output is " + t)
         return t
+    }
+
+    get validInfixPattern(){
+        
     }
     
     isNumber(c){
