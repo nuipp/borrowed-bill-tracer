@@ -3,7 +3,7 @@ import './App.css';
 import Layout from "./Layout";
 import Home from "./Pages/Home";
 import NoPage from "./NoPage";
-import TestFirebase from "./Tests/Testfirebase";
+import TestFirebase from "./Pages/Testfirebase";
 
 function App() {
   return (
